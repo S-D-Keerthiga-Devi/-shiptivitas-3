@@ -92,15 +92,15 @@ GROUP BY period;
 
 ### Part 2: Number of Status Changes by Card
 
-#### Query 2A: Status Changes Grouped by Card ID
+#### Query 2A: Status Changes Grouped by Card ID (Official Model)
 ```sql
 SELECT 
-    cardID, 
-    COUNT(*) AS status_changes
+    cardId, 
+    COUNT(id) AS n_status_change
 FROM card_change_history
-WHERE oldStatus IS NOT NULL AND oldStatus != ''
-GROUP BY cardID
-ORDER BY status_changes DESC;
+WHERE oldStatus <> newStatus
+GROUP BY cardId
+ORDER BY n_status_change DESC;
 ```
 
 #### Query 2B: Detailed Status Changes Joined with Card Name and Current Status
@@ -109,14 +109,13 @@ SELECT
     c.id AS card_id,
     c.name AS card_name,
     c.status AS current_status,
-    COUNT(ch.id) AS status_changes
+    COUNT(ch.id) AS n_status_change
 FROM card c
 LEFT JOIN card_change_history ch 
     ON c.id = ch.cardID 
-    AND ch.oldStatus IS NOT NULL 
-    AND ch.oldStatus != ''
+    AND ch.oldStatus <> ch.newStatus
 GROUP BY c.id, c.name, c.status
-ORDER BY status_changes DESC, c.id ASC;
+ORDER BY n_status_change DESC, c.id ASC;
 ```
 
 **Sample Results (Top Most Active Cards):**
